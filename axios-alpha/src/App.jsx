@@ -1,84 +1,37 @@
-import { useState, useEffect } from "react";
-import axios from "./axios";
-import './App.css';
+import React, { Component } from "react";
+import CardList from "./components/CardList";
+import { robots } from "./data/robots";
+import MainTitle from "./components/MainTitle";
+import SearchBox from "./components/SearchBox";
 
-// const API = "https://jsonplaceholder.typicode.com/posts";
-
-function App() {
-  const[myData, setMyData] = useState([]);
-  const[isError, setIsError] = useState("");
-
-
-  //using promises
-  // useEffect(()=> {
-  //   axios.get("https://jsonplaceholder.typicode.com/posts")
-  //   .then((res) => setMyData(res.data))
-  //   .catch((error)=> 
-  //   setIsError(error.message));
-
-  // }, []);
-
-
-
-  //Using Async Await
-
-
-// const getApiData = async () => {
-//   try {
-//     const res = await axios.get("https://jsonplaceholder.typicode.com/posts")
-//   setMyData(res.data);
-    
-//   } catch (error) {
-//     setIsError(error.message);
-//   }
-  
-// };
-  
-//   useEffect(()=> {
-     // create function
-//     getApiData();
-//   }, []);
-
-  //Best Way
-  //1. add API on Top
-
-  const getApiData = async () => {
-    try {
-      const res = await axios.get("/posts");
-    setMyData(res.data);
-      
-    } catch (error) {
-      setIsError(error.message);
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      robots: robots,
+      searchfield: ''
     }
-    
-  };
-    
-    useEffect(()=> {
-      // create function
-      getApiData();
-    }, []);
+  }
+  onSearchChange = (event) => {
+    // Handle search logic here
+    this.setState({ searchfield: event.target.value });
+  }
 
-  return (
-    <>
-      <h1>Learn Axios</h1>
-      {isError !== "" && <h2>{isError}</h2>}
-      <div className="grid">
-      {myData.slice(0,12).map((post) => {
-          const {id, title, body} = post;
-          return(
-            
-          <div className="card" key ={id}>
-            <h2>{title}</h2>
-            <p>{body}</p>
-          </div>
-          
-          );
-        })
-      }
-      </div>
-      
-    </>
-  )
+  render() {
+    const filteredRobots = this.state.robots.filter((robots) => {
+      return robots.title
+        .toLocaleLowerCase()
+        .includes(this.state.searchfield.toLocaleLowerCase())
+    })
+
+    return (
+      <>
+        <MainTitle />
+        <SearchBox searchChange={this.onSearchChange} />
+        <CardList robots={filteredRobots} />
+      </>
+    );
+  }
 }
 
-export default App
+export default App;
